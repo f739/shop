@@ -11,18 +11,27 @@
 <body>
 
     <div id="app">
-        <cart></cart>
+        <cart :count="cartcount"></cart>
         <prodact v-for="prodact in prodacts" 
         :description="prodact.description" 
-        :image="prodact.image">
+        :image="prodact.image" @add-to-cart="cartcount++"> 
         </prodact>
     </div>
     <script>
+        Vue.component('cart', {
+        props: ['count'],
+            template: `<div>
+            <img src="image/cart.jpeg" width="80"/>
+          <span> {{count}}</span>
+            </div>` 
+        })
+
+
         Vue.component('prodact', {
             props: ['description', 'image'],
             template: `<div>
-        <button>add to cart</button>
-        <div claas="description"> description:{{description}}</div>
+        <button @click="$emit('add-to-cart')">add to cart</button>
+        <div claas="description"> description: {{description}}</div>
         <div class="image" ><img :src="image" width="200"/></div>
         </div>`
         });
@@ -39,7 +48,8 @@
                         description: 'funny t-shirt',
                         image: 'image/tshirt.jpeg'
                     }
-                ]
+                ],
+                cartcount: 0
             }
         })
     </script>
