@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="vuejs.js"></script>
+</head>
+
+<body>
+
+    <div id="app">
+        <cart></cart>
+        <prodact v-for="prodact in prodacts" 
+        :description="prodact.description" 
+        :image="prodact.image">
+        </prodact>
+    </div>
+    <script>
+        Vue.component('prodact', {
+            props: ['description', 'image'],
+            template: `<div>
+        <button>add to cart</button>
+        <div claas="description"> description:{{description}}</div>
+        <div class="image" ><img :src="image" width="200"/></div>
+        </div>`
+        });
+        let app = new Vue({
+            el: '#app',
+            data: {
+                prodacts: [
+                    {
+                        description: 'black shoose',
+                        image: 'image/shoose.jpeg'
+                    },
+
+                    {
+                        description: 'funny t-shirt',
+                        image: 'image/tshirt.jpeg'
+                    }
+                ]
+            }
+        })
+    </script>
+
+</body>
+
+</html>
