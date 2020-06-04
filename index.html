@@ -11,44 +11,60 @@
 <body>
 
     <div id="app">
-        <cart :count="cartcount"></cart>
+        <cart :count="cartcount" :cartprodacts="cartprodacts"></cart>
         <prodact v-for="prodact in prodacts" 
         :description="prodact.description" 
-        :image="prodact.image" @add-to-cart="cartcount++"> 
+        :image="prodact.image" 
+        :id="prodact.id"
+          :key="prodact.id"  @add-to-cart="addToCart">
         </prodact>
     </div>
     <script>
         Vue.component('cart', {
-        props: ['count'],
+            props: ['count', 'cartprodacts'],
             template: `<div>
             <img src="image/cart.jpeg" width="80"/>
           <span> {{count}}</span>
-            </div>` 
+          <ul>
+            <li v-for="cartprodact in cartprodacts"> {{cartprodact.description}}</li>
+            </ul>
+            </div>`
         })
 
 
         Vue.component('prodact', {
-            props: ['description', 'image'],
+            props: ['description', 'image', 'id'],
             template: `<div>
-        <button @click="$emit('add-to-cart')">add to cart</button>
+        <button @click="$emit('add-to-cart',id)">add to cart</button>
+        <div> number prodact: {{id}}</div>
         <div claas="description"> description: {{description}}</div>
         <div class="image" ><img :src="image" width="200"/></div>
         </div>`
         });
         let app = new Vue({
             el: '#app',
+            methods: {
+                addToCart(id) {
+                    this.cartcount++;
+                    const prodact = this.prodacts.find(prodact => prodact.id === id)
+                    this.cartprodacts.push(prodact)
+                }
+            },
             data: {
                 prodacts: [
                     {
+                        id: 1,
                         description: 'black shoose',
                         image: 'image/shoose.jpeg'
                     },
 
                     {
+                        id: 2,
                         description: 'funny t-shirt',
                         image: 'image/tshirt.jpeg'
                     }
                 ],
+                cartprodacts: [],
                 cartcount: 0
             }
         })
