@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="lib/vuejs.js"></script>
+    <script src="lib/vue-router.js"></script>
+</head>
+
+<body>
+    <style>
+        .prodact {
+            border: 2px solid black;
+            float: left;
+            height: 300px;
+            width: 300px;
+            margin: 10px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .buttonadd {
+            font-size: 20px;
+            background-color: rgb(69, 69, 221);
+            color: bisque;
+            border-radius: 10px;
+            width: 100%;
+
+        }
+    </style>
+
+    <div id="app">
+        <div class="menu">
+            <router-link to="/">Home</router-link> |
+            <router-link to="/about">about</router-link>
+        </div>
+        <router-view></router-view>
+    </div>
+    <script>
+
+        const prodacts = [
+            {
+                id: 1,
+                description: 'black shoose',
+                descriptionlong: 'this is the shoose very strong',
+                image: 'image/shoose.jpeg'
+            },
+
+            {
+                id: 2,
+                description: 'funny t-shirt',
+                descriptionlong: 'this is t-shirt the bast',
+                image: 'image/tshirt.jpeg'
+            }
+        ]
+        const Home = Vue.component('home', {
+            template: `<div> 
+                <cart :count="cartcount" :cartprodacts="cartprodacts"></cart>
+        <prodact v-for="prodact in prodacts" :description="prodact.description" :image="prodact.image" :id="prodact.id"
+            :key="prodact.id" @add-to-cart="addToCart">
+        </prodact>
+        </div>`,
+            methods: {
+                addToCart(id) {
+                    this.cartcount++;
+                    const prodact = this.prodacts.find(prodact => prodact.id === id)
+                    this.cartprodacts.push(prodact)
+                }
+            },
+            data() {
+                return {
+                    prodacts,
+                    cartprodacts: [],
+                    cartcount: 0
+                }
+            }
+        })
+
+
+        const about = Vue.component('about', {
+            template: `<div> 
+        about our stor....
+        </div>`
+        })
+
+
+        const NotFound = Vue.component('NotFound', {
+            template: `<div> 
+          this page is not found!!!       
+          </div>`
+        })
+
+
+        Vue.component('cart', {
+            props: ['count', 'cartprodacts'],
+            template: `<div>
+            <img src="image/cart.jpeg" width="80"/>
+          <span> {{count}}</span>
+          <ul>
+            <li v-for="cartprodact in cartprodacts"> {{cartprodact.description}}</li>
+            </ul>
+            </div>`
+        })
+
+
+
+
+        Vue.component('prodact', {
+            props: ['description', 'image', 'id'],
+            template: `<div class="prodact">
+                <button class="buttonadd" @click="$emit('add-to-cart',id)" >add to cart</button>
+                <div> number prodact: {{id}}</div>
+                <div claas="description"> description: {{description}}</div>
+                <div class="image" ><img :src="image" width="200"/></div>
+                <router-link :to="'/prodact/'+id">show detials</router-link>
+                </div>`
+        })
+
+        const prodactdetails = Vue.component('prodact-detils', {
+            props: ['id'],
+            data() {
+                return { prodacts }
+            },
+            computed: {
+                prodact() {
+                    if (this.prodacts.length === 0) {
+                        return {
+                            id: null,
+                            description: '',
+                            descriptionlong: ''
+                        }
+                    } const res = this.prodacts.find(prodact => prodact.id === +this.id);
+                    if (!res) {
+                        //404
+                        return;
+                    }
+                    return this.prodacts.find(prodact => prodact.id === +this.id)
+                }
+            },
+            template: `<div>
+               <div v-if="prodact"> {{prodact.descriptionlong}}<div>
+                 <div v-else> the prodact is not found</div>
+                </div>`,
+        })
+
+
+        const router = new VueRouter({
+            routes: [
+                { 'path': '/', component: Home },
+                { 'path': '/about', component: about },
+                { 'path': '/prodact/:id', component: prodactdetails, props: true },
+                { 'path': '/*', component: NotFound }
+            ]
+        })
+
+        new Vue({
+            el: '#app',
+            router
+        })
+    </script>
+
+</body>
+
+</html>
